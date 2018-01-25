@@ -1,0 +1,111 @@
+
+<!DOCTYPE html>
+<html ng-app>
+<head>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.32/angular.min.js"></script>
+<script type="text/javascript" src="https://ajax.microsoft.com/ajax/jQuery/jquery-1.4.2.min.js"></script>
+	
+<title>Smart Bot</title>
+</head>
+<style>
+body {
+    margin: 0 auto;
+    max-width: 800px;
+    padding: 0 20px;
+}
+
+.container {
+    border: 2px solid #dedede;
+    background-color: #f1f1f1;
+    border-radius: 5px;
+    padding: 10px;
+    margin: 10px 0;
+}
+
+.darker {
+    border-color: #ccc;
+    background-color: #ddd;
+}
+
+.container::after {
+    content: "";
+    clear: both;
+    display: table;
+}
+
+.container img {
+    float: left;
+    max-width: 60px;
+    width: 100%;
+    margin-right: 20px;
+    border-radius: 50%;
+}
+
+.container img.right {
+    float: right;
+    margin-left: 20px;
+    margin-right:0;
+}
+
+.time-right {
+    float: right;
+    color: #aaa;
+}
+
+.time-left {
+    float: left;
+    color: #999;
+}
+	
+.messages {
+	background: #c2d3ef;
+	border-radius: 5px;
+	width:250px;
+	height:18px;
+	text-align:left;
+}
+</style>
+<body>
+<div ng-controller="MessageController">
+	<h2>Messages</h2>
+	<div class="container" style="overflow-y: scroll;">
+	<p ng-if="messages" ng-repeat="message in messages track by $index" class="messages"> {{message}} </p>
+	</div>
+	<label>Enter Message</label><input id="messagesBox" type="text" ng-model="newmessage" />
+	<button id="buttn" ng-click="add()">send</button>
+</div>
+
+	<script type="text/javascript">
+	function MessageController($scope) {
+	    $scope.messages = [];
+	    $scope.add = function() {
+			$scope.messages.push($scope.newmessage);
+			$.ajax({
+				url: "http://localhost:8080/getMessage",
+				method: "POST",
+				data:{message: $scope.newmessage},
+				success: function(response){
+					$scope.messages.push(response);
+					$scope.$apply();
+					return;
+				},
+				error: function(response){
+					console.error("Error occured");
+					return;
+				}
+			});
+			
+			
+			$scope.newmessage = "";
+	    }
+	}
+document.getElementById("messagesBox").addEventListener("keyup", function(event) {
+    event.preventDefault();
+    if (event.keyCode === 13) {
+        document.getElementById("buttn").click();
+    }
+});
+</script>
+
+</body>
+</html>
